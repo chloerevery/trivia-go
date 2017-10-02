@@ -6,7 +6,7 @@
 
 **Add a new trivia question**
 
-````curl -X POST -d '{"prompt":"How many books are in the Harry Potter series?","answer":"7"}' localhost:8000/trivium```
+```curl -X POST -d '{"prompt":"How many books are in the Harry Potter series?","answer":"7"}' localhost:8000/trivium```
 POST data:
 
 -`prompt` (required)
