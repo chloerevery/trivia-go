@@ -19,22 +19,26 @@ func main() {
     router.HandleFunc("/trivium", CreateTrivium).Methods("POST")
     router.HandleFunc("/trivium", DeleteTrivium).Methods("DELETE")
 
+    idx = 0
+
     trivia = append(trivia, Trivium{Prompt: "What is Dr. Seuss's real name?", Answer: "Theodore Geisel"})
     trivia = append(trivia, Trivium{Prompt: "In what country is the region of Andalusia located?", Answer: "Spain"})
     trivia = append(trivia, Trivium{Prompt: "In what theater was Lincoln killed?", Answer: "Ford"})
-    var t Trivium
-    t.Prompt = "Test Prompt!!"
-    trivia = append(trivia, t)
-
-
 
     log.Fatal(http.ListenAndServe(":8000", router))
 
 }
 
 func GetTrivium(w http.ResponseWriter, r *http.Request) {
-	rand := rand.Intn(len(trivia))
-	json.NewEncoder(w).Encode(trivia[rand])
+	if len(trivia) == 0 {
+		return
+	}
+	t := trivia[idx]
+	idx++
+	if idx == len(trivia) {
+		idx = 0;
+	}
+	json.NewEncoder(w).Encode(t)
 	return
 }
 
@@ -60,7 +64,15 @@ func CreateTrivium(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTrivium(w http.ResponseWriter, r *http.Request) {
-    // TODO(CHLOE): Implement.
+    params := mux.Vars(r)
+    for i, t := range trivia {
+        if t.Prompt == params["prompt"] {
+            trivia = append(trivia[:i], trivia[i+1:]...)
+            break
+        }
+    }
+    json.NewEncoder(w).Encode(trivia)
+
     return
 }
 
@@ -72,3 +84,5 @@ type Trivium struct {
 }
 
 var trivia []Trivium
+
+var idx int
